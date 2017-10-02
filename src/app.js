@@ -18,14 +18,18 @@ class App {
     mousedown() {
         const drive = this.racecar.drive;
         if (drive.speed === 0) {
-            this.racecar.drive.speed = 50;
-            this.racecar.drive.acceleration = 5;
+            this.racecar.drive.speed = 5;
+            this.racecar.drive.acceleration = 2;
             this.log('accelerating');
             return;
         }
         this.racecar.drive.speed = 0;
         this.racecar.drive.acceleration = 0;
         this.log('braking');
+    }
+
+    slider(value) {
+        this.racecar.drive.steering_angle = value * 3.141 / 180 * (-1);
     }
 
     mouseup() {

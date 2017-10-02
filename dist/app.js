@@ -18,14 +18,18 @@ class App {
     mousedown() {
         const drive = this.racecar.drive;
         if (drive.speed === 0) {
-            this.racecar.drive.speed = 50;
-            this.racecar.drive.acceleration = 5;
+            this.racecar.drive.speed = 5;
+            this.racecar.drive.acceleration = 2;
             this.log('accelerating');
             return;
         }
         this.racecar.drive.speed = 0;
         this.racecar.drive.acceleration = 0;
         this.log('braking');
+    }
+
+    slider(value) {
+        this.racecar.drive.steering_angle = value * 3.141 / 180 * (-1);
     }
 
     mouseup() {
@@ -36,8 +40,14 @@ class App {
 window.onload =  (function () {
     const app = new App();
     const myBtn = document.getElementById('myBtn');
+    var slider = document.getElementById("myRange");
+
     myBtn.addEventListener('mousedown', () => app.mousedown());
     myBtn.addEventListener('mouseup', () => app.mouseup());
+
+    slider.oninput = function() {
+        app.slider(this.value);
+    }
 });
 
 class Racecar {
@@ -67,7 +77,8 @@ class RosServer {
         this.log = log;
         this.callback = publishCallback;        
         this.server = new ROSLIB.Ros({
-            url: 'ws://192.168.64.2:9090'
+            //url: 'ws://192.168.64.2:9090' // no port forwarding, works in MacOS Chrome, but not on other devices in Network
+            url: 'ws://10.0.0.21:9000' // port forwarding in MacOS (10.0.0.21:9000 -> 192.168.64.2:9090), MacOS Chrome doesnt work anymore
         });
         this.server.on('connection', this.connection.bind(this));
         this.server.on('error', this.error.bind(this));
@@ -75,7 +86,7 @@ class RosServer {
     }
     start() {
         const fps = 20;                
-        setInterval(this.callback, 1000 / fps);        
+        setInterval(this.callback, 1000 / fps);
     }
     connection() {
         this.log('connection');        
